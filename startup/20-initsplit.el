@@ -33,38 +33,3 @@
     ;; otherwise, fall back to the default initsplit behavior
     (initsplit-load-if-exists file)))
 (setq initsplit-load-function 'elhome-initsplit-load)
-
-;; Load up any customization themes based on the system-type and the
-;; system-name.  This allows us to use the customize interface (via
-;; customize-create-theme) to set up platform- and system- dependent
-;; customizations.  To create a set of customizations that applies
-;; when (eq system-type 'darwin), just create a theme called
-;; "system-type-darwin".  See
-;; [[info:emacs:Custom%20Themes][info:emacs:Custom Themes]] for more on
-;; themes.
-(dolist (x '(type name))
-  (let* ((var-name (concat "system-" (symbol-name x)))
-         (var-value (eval (intern var-name)))
-         (theme-name (concat var-name "-" (format "%s" var-value)))
-         (theme (intern theme-name))
-         (ignored-errors
-          `((file-error "Cannot open load file" ,(concat theme-name "-theme"))
-            (error ,(concat "Undefined Custom theme " theme-name))
-            (error ,(concat "Unable to find theme file for `" theme-name "'"))
-            ))
-         (load-path (cons elhome-settings-directory load-path)))
-
-    ;; Try to enable the theme
-    (condition-case err
-        (let ((custom-known-themes (list theme 'user)))
-          (load-theme theme)
-          (enable-theme theme))
-
-      ((error file-error) 
-       (unless (member err ignored-errors)
-         (signal (car err) (cdr err)))))
-
-    ;; HACK: remove the theme from the customization variable.  This
-    ;; should stay programmatic.
-    (setq custom-enabled-themes
-          (delq theme custom-enabled-themes))))
