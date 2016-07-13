@@ -7,7 +7,6 @@
 ;; Version: 0.9.1
 ;; Keywords: lisp
 ;; URL: http://github.com/demyanrogozhin/elhome
-;; Package-Requires: ((initsplit "20120630"))
 
 ;;; Commentary:
 
